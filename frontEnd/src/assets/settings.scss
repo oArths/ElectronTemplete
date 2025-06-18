@@ -1,0 +1,4 @@
+@use 'vuetify/settings' with (
+  $data-table-footer-info-padding: 0 5px,
+  $data-table-footer-pagination-margin-inline-start: 0px
+);

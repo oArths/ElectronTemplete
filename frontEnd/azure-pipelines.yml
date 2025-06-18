@@ -1,0 +1,57 @@
+trigger:
+  - master
+
+# Use the default agent pool
+pool:
+  name: "default" # Default pool
+
+stages:
+  - stage: Build
+    displayName: "Build Stage"
+    jobs:
+      - job: Build_Windows
+        displayName: "Build on Windows"
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "22.3.0"
+            displayName: "Install Node.js 22.3.0 on Windows"
+
+          - script: |
+              npm install -g npm@10.8.1
+            displayName: "Install npm 10.8.1"
+
+          - script: |
+              npm install
+            displayName: "Install dependencies"
+
+          - script: |
+              npm run electron:build
+            displayName: "Build Electron app"
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "dist_electron/mfa Setup 0.1.0.exe"
+              ArtifactName: "drop"
+              publishLocation: "Container"
+          
+          - powershell: |
+              # Get the current date and format it
+              $currentDate = Get-Date -Format "yyyy-MM-dd"
+              # Set the formatted date as a pipeline variable
+              Write-Host "##vso[task.setvariable variable=dateVariable]$currentDate"
+            displayName: 'Get Current Date'
+
+          - powershell: |
+              # Define the source and target paths
+              $sourcePath = "$(Pipeline.Workspace)\drop\mfa Setup 0.1.0.exe"
+              $targetFolder = "C:\Users\70085828\Kantar\Operaciones LatAm - Proyectos\MFA2.0\Ejecutable"
+              $newFileName = "mfa ($($env:dateVariable)).exe"  # Construct new file name with date
+              $targetPath = Join-Path -Path $targetFolder -ChildPath $newFileName
+              
+              # Copy and rename the file
+              Copy-Item -Path $sourcePath -Destination $targetPath
+              Write-Host "Copied file to: $targetPath"
+            displayName: 'Copy and Rename Artifact'
+            env:
+              dateVariable: $(dateVariable)  # Pass the date variable to the script

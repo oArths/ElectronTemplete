@@ -1,0 +1,16 @@
+build
+frontEnd/docs/*
+backEnd/output/*
+backEnd/fastapi_app.spec
+frontEnd/resources/*
+executable/fastapi_app
+/.idea
+
+
+frontEnd/.DS_Store
+frontEnd/node_modules
+frotEnd/dist
+frontEnd/dist_electron
+frontEnd/MFA-win32-x64
+frontEnd/.env
+
